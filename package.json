@@ -6,7 +6,7 @@
   "author": "quiteer",
   "scripts": {
     "lint": "eslint . --fix",
-    "build": "pnpm --filter ./packages/* build"
+    "build": "pnpm --filter './packages/*' build"
   },
   "devDependencies": {
     "@quiteer/eslint-config": "^0.0.3",
