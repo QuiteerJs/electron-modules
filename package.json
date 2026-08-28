@@ -7,7 +7,8 @@
   "scripts": {
     "lint": "eslint . --fix",
     "build": "pnpm --filter './packages/*' build",
-    "test": "pnpm -r --if-present test"
+    "test": "pnpm -r --if-present test",
+    "publish:all": "pnpm -r --filter './packages/*' publish --access public --no-git-checks"
   },
   "devDependencies": {
     "@quiteer/eslint-config": "^0.0.5",
