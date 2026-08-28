@@ -5,6 +5,7 @@ yarn-error.log*
 .DS_Store
 dist
 out
+.out
 bin
 logs
 coverage
