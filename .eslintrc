@@ -1,3 +1,8 @@
 {
-  "extends": "@quiteer"
+  "extends": "@quiteer",
+  "ignorePatterns": [
+    "node_modules",
+    "**/dist",
+    "**/web"
+  ]
 }
