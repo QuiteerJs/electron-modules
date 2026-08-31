@@ -1,3 +1,26 @@
 packages:
   - 'packages/*'
   - 'playground/*'
+
+catalog:
+  vite: npm:@voidzero-dev/vite-plus-core@0.1.12
+  vitest: npm:@voidzero-dev/vite-plus-test@0.1.12
+  vite-plus: 0.1.12
+  typescript: 5.9.3
+
+overrides:
+  vite: 'catalog:'
+  vitest: 'catalog:'
+
+peerDependencyRules:
+  allowAny:
+    - vite
+    - vitest
+  allowedVersions:
+    vite: '*'
+    vitest: '*'
+
+onlyBuiltDependencies:
+  - electron
+  - esbuild
+  - simple-git-hooks

@@ -2,22 +2,30 @@
   "name": "electron-modules-monorepo",
   "version": "0.0.1",
   "private": true,
+  "packageManager": "pnpm@10.32.1",
   "description": "一些关于electron的便捷工具类库",
   "author": "quiteer",
   "scripts": {
-    "lint": "eslint . --fix",
+    "lint": "vp lint .",
+    "lint:fix": "vp lint . --fix",
+    "fmt": "vp fmt .",
+    "fmt:check": "vp fmt . --check",
+    "check": "vp check",
     "build": "pnpm --filter './packages/*' build",
     "test": "pnpm -r --if-present test",
     "publish:all": "pnpm -r --filter './packages/*' publish --access public --no-git-checks"
   },
   "devDependencies": {
-    "@quiteer/eslint-config": "^0.0.5",
-    "@quiteer/ts-config": "^0.0.7",
+    "@antfu/eslint-config": "^7.6.1",
     "@types/node": "^22.10.0",
     "bumpp": "^12.2.2",
     "electron": "^44.0.0",
-    "eslint": "^8.57.1",
-    "tsdown": "^0.22.14",
-    "typescript": "^5.9.3"
+    "eslint": "^10.0.3",
+    "eslint-plugin-markdown": "^5.1.0",
+    "lint-staged": "^16.2.7",
+    "simple-git-hooks": "^2.13.1",
+    "tsx": "^4.21.0",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
   }
 }

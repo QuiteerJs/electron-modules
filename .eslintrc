@@ -1,9 +1,0 @@
-{
-  "extends": "@quiteer",
-  "ignorePatterns": [
-    "node_modules",
-    "**/dist",
-    "**/web",
-    "**/.out"
-  ]
-}
