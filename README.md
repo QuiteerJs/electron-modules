@@ -58,5 +58,8 @@ app.whenReady().then(() => {
 pnpm install
 pnpm build   # 构建全部包
 pnpm test    # 运行测试
-pnpm lint    # 代码检查
+pnpm check   # 格式 + lint + 类型检查 (CI 同款)
+pnpm lint    # 仅 lint
 ```
+
+每个包的测试都在 `test/` 下, 打包时把 `electron` 替换为 `test/stubs/electron.ts` 里的替身, 无需真实 Electron 环境。
