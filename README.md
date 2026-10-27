@@ -14,6 +14,12 @@
 | [@quiteer/electron-shortcut](./packages/shortcut) | 主进程   | 全局快捷键按名注册，冲突检测，按窗口焦点启停                   |
 | [@quiteer/electron-app](./packages/app)           | 主进程   | 应用生命周期：单实例、deep link、activate 重建、优雅退出       |
 
+## 文档
+
+- 各包用法见上表链接里的 README。
+- [升级指南](./docs/migration.md)：`electron-preload` 2.x → 3.0（通道白名单、`$clipboard` 按需开启）与 `electron-ipc` 3.1 → 3.2（来源校验、IPC 契约）。
+- [playground/basic](./playground/basic)：把 app / browser / ipc / preload 串起来的可运行示例，`sandbox: true` 下跑通。
+
 ## 共同约定
 
 几个管理器类的包（browser / menu / tray / shortcut）写法一致，学会一个就够：
