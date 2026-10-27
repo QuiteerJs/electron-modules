@@ -19,7 +19,6 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^7.6.1",
-    "@changesets/changelog-github": "^1.0.1",
     "@changesets/cli": "^3.0.3",
     "@types/node": "^22.10.0",
     "electron": "^44.0.0",
