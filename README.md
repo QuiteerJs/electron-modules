@@ -76,10 +76,21 @@ const lifecycle = setupApp({
 
 ```bash
 pnpm install
-pnpm build   # 构建全部包
-pnpm test    # 运行测试
-pnpm check   # 格式 + lint + 类型检查 (CI 同款)
-pnpm lint    # 仅 lint
+pnpm build      # 构建全部包
+pnpm test       # 单元测试
+pnpm test:e2e   # 真 Electron 冒烟测试 (需先 build, Linux 无桌面环境时用 xvfb-run -a pnpm test:e2e)
+pnpm check      # 格式 + lint + 类型检查 (CI 同款)
+pnpm lint       # 仅 lint
 ```
 
-每个包的测试都在 `test/` 下, 打包时把 `electron` 替换为 `test/stubs/electron.ts` 里的替身, 无需真实 Electron 环境。
+- 单元测试在各包的 `test/` 下, 打包时把 `electron` 替换为 `test/stubs/electron.ts` 里的替身, 无需真实 Electron 环境。
+- [playground/smoke](./playground/smoke) 是冒烟测试专用的最小应用, Playwright 拉起它验证 sandbox 下的预加载脚本、ipc 往返、菜单与托盘;
+  CI 在 Linux / macOS / Windows 上各跑一遍, 同时运行 [playground/basic](./playground/basic) 的自检 (`pnpm --filter @quiteer/playground-basic smoke`)。
+
+## 发布
+
+版本与 CHANGELOG 由 [changesets](https://github.com/changesets/changesets) 管理, 发布在本地手动进行, CI 不会自动发布。
+
+1. 改动影响使用者时, 在 PR 里运行 `pnpm changeset` 附带变更说明 (详见 [.changeset/README.md](./.changeset/README.md))。
+2. 准备发版时运行 `pnpm version-packages`: 汇总全部 changeset, 升版本号、写 CHANGELOG, 提交这次改动。
+3. 登录 npm 后运行 `pnpm release`: 构建全部包, 只发布 npm 上还没有的版本, 并在本地打 tag (之后 `git push --follow-tags`)。

@@ -9,7 +9,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     env:
-      # 测试走替身, 不需要 electron 二进制
+      # 单测走替身, 不需要 electron 二进制
       ELECTRON_SKIP_BINARY_DOWNLOAD: 1
     steps:
       - uses: actions/checkout@v4
@@ -23,3 +23,45 @@ jobs:
       - run: pnpm build
       - run: pnpm check
       - run: pnpm test
+
+  # 真 Electron 冒烟测试: 覆盖替身发现不了的问题 (sandbox 下 preload 能拿到哪些模块、ipc 往返等)
+  # menu / tray 有大量平台分支, 三个平台都跑
+  smoke:
+    name: smoke (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      # .npmrc 里的镜像是给国内本地开发用的, CI 直连官方源更稳
+      npm_config_registry: https://registry.npmjs.org/
+      npm_config_electron_mirror: https://github.com/electron/electron/releases/download/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: 放开 Ubuntu 对非特权用户命名空间的限制 (Chromium 进程沙箱需要)
+        if: runner.os == 'Linux'
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - name: 冒烟测试 (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          xvfb-run -a pnpm test:e2e
+          xvfb-run -a pnpm --filter @quiteer/playground-basic smoke
+      - name: 冒烟测试
+        if: runner.os != 'Linux'
+        run: |
+          pnpm test:e2e
+          pnpm --filter @quiteer/playground-basic smoke
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: smoke-results-${{ matrix.os }}
+          path: playground/smoke/test-results
+          retention-days: 7
