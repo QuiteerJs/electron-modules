@@ -15,8 +15,8 @@
       "    ",
       "    return () => (<$2></$2>)",
       "  }",
-      "})"
+      "})",
     ],
-    "description": "vue3 tsx setup template"
-  }
+    "description": "vue3 tsx setup template",
+  },
 }
