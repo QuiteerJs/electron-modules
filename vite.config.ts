@@ -22,12 +22,6 @@ export default defineConfig({
     },
     overrides: [
       {
-        files: ['packages/*/build.ts', 'packages/tools/**/*.ts'],
-        rules: {
-          'no-console': 'off',
-        },
-      },
-      {
         // node:test 的 test() 返回 Promise, 由运行器统一等待
         files: ['packages/*/test/**/*.ts'],
         rules: {
