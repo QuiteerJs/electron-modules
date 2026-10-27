@@ -22,12 +22,16 @@ export default defineConfig({
     },
     overrides: [
       {
-        files: [
-          'packages/*/build.ts',
-          'packages/tools/**/*.ts',
-        ],
+        files: ['packages/*/build.ts', 'packages/tools/**/*.ts'],
         rules: {
           'no-console': 'off',
+        },
+      },
+      {
+        // node:test 的 test() 返回 Promise, 由运行器统一等待
+        files: ['packages/*/test/**/*.ts'],
+        rules: {
+          'typescript/no-floating-promises': 'off',
         },
       },
     ],
@@ -43,7 +47,14 @@ export default defineConfig({
         ['type-import'],
         ['type-builtin', 'value-builtin'],
         ['type-external', 'value-external', 'type-internal', 'value-internal'],
-        ['type-parent', 'type-sibling', 'type-index', 'value-parent', 'value-sibling', 'value-index'],
+        [
+          'type-parent',
+          'type-sibling',
+          'type-index',
+          'value-parent',
+          'value-sibling',
+          'value-index',
+        ],
         ['unknown'],
       ],
       newlinesBetween: true,
