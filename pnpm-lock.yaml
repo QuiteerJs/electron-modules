@@ -55,6 +55,12 @@ importers:
         specifier: 'catalog:'
         version: 0.1.12(@types/node@22.20.1)(tsx@4.23.13)(typescript@5.9.3)(yaml@2.9.0)
 
+  packages/app:
+    devDependencies:
+      vite-plus:
+        specifier: 'catalog:'
+        version: 0.1.12(@types/node@26.4.0)(tsx@4.23.13)(typescript@5.9.3)(yaml@2.9.0)
+
   packages/browser:
     devDependencies:
       vite-plus:
@@ -79,6 +85,12 @@ importers:
         specifier: 'catalog:'
         version: 0.1.12(@types/node@26.4.0)(tsx@4.23.13)(typescript@5.9.3)(yaml@2.9.0)
 
+  packages/shortcut:
+    devDependencies:
+      vite-plus:
+        specifier: 'catalog:'
+        version: 0.1.12(@types/node@26.4.0)(tsx@4.23.13)(typescript@5.9.3)(yaml@2.9.0)
+
   packages/tray:
     devDependencies:
       vite-plus:
@@ -86,6 +98,25 @@ importers:
         version: 0.1.12(@types/node@26.4.0)(tsx@4.23.13)(typescript@5.9.3)(yaml@2.9.0)
 
   playground/basic:
+    dependencies:
+      '@quiteer/electron-app':
+        specifier: workspace:*
+        version: link:../../packages/app
+      '@quiteer/electron-browser':
+        specifier: workspace:*
+        version: link:../../packages/browser
+      '@quiteer/electron-ipc':
+        specifier: workspace:*
+        version: link:../../packages/ipc
+      '@quiteer/electron-preload':
+        specifier: workspace:*
+        version: link:../../packages/preload
+    devDependencies:
+      vite-plus:
+        specifier: 'catalog:'
+        version: 0.1.12(@types/node@26.4.0)(tsx@4.23.13)(typescript@5.9.3)(yaml@2.9.0)
+
+  playground/smoke:
     dependencies:
       '@quiteer/electron-browser':
         specifier: workspace:*
@@ -3225,7 +3256,7 @@ snapshots:
       sirv: 3.0.2
       std-env: 4.2.0
       tinybench: 2.9.0
-      tinyexec: 1.3.0
+      tinyexec: 1.3.1
       tinyglobby: 0.2.17
       vite: '@voidzero-dev/vite-plus-core@0.1.12(@types/node@26.4.0)(tsx@4.23.13)(typescript@5.9.3)(yaml@2.9.0)'
       ws: 8.21.3

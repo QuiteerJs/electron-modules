@@ -4,17 +4,25 @@
 
 ## Packages
 
-| 包                                              | 运行环境 | 说明                                                           |
-| ----------------------------------------------- | -------- | -------------------------------------------------------------- |
-| [@quiteer/electron-ipc](./packages/ipc)         | 主进程   | 开箱即用的 IPC 通道（窗口控制 / 路径处理），附带渲染层类型增强 |
-| [@quiteer/electron-preload](./packages/preload) | 预加载   | 预加载脚本桥接封装，一行接入 `webPreferences.preload`          |
-| [@quiteer/electron-browser](./packages/browser) | 主进程   | 窗口创建与统一管理，随时按名取窗                               |
-| [@quiteer/electron-menu](./packages/menu)       | 主进程   | 菜单创建与统一管理，按点分路径定位菜单项                       |
-| [@quiteer/electron-tray](./packages/tray)       | 主进程   | 系统托盘创建与统一管理，图标状态切换                           |
+| 包                                                | 运行环境 | 说明                                                           |
+| ------------------------------------------------- | -------- | -------------------------------------------------------------- |
+| [@quiteer/electron-ipc](./packages/ipc)           | 主进程   | 开箱即用的 IPC 通道（窗口控制 / 路径处理），附带渲染层类型增强 |
+| [@quiteer/electron-preload](./packages/preload)   | 预加载   | 预加载脚本桥接封装，一行接入 `webPreferences.preload`          |
+| [@quiteer/electron-browser](./packages/browser)   | 主进程   | 窗口创建与统一管理，随时按名取窗                               |
+| [@quiteer/electron-menu](./packages/menu)         | 主进程   | 菜单创建与统一管理，按点分路径定位菜单项                       |
+| [@quiteer/electron-tray](./packages/tray)         | 主进程   | 系统托盘创建与统一管理，图标状态切换                           |
+| [@quiteer/electron-shortcut](./packages/shortcut) | 主进程   | 全局快捷键按名注册，冲突检测，按窗口焦点启停                   |
+| [@quiteer/electron-app](./packages/app)           | 主进程   | 应用生命周期：单实例、deep link、activate 重建、优雅退出       |
+
+## 文档
+
+- 各包用法见上表链接里的 README。
+- [升级指南](./docs/migration.md)：`electron-preload` 2.x → 3.0（通道白名单、`$clipboard` 按需开启）与 `electron-ipc` 3.1 → 3.2（来源校验、IPC 契约）。
+- [playground/basic](./playground/basic)：把 app / browser / ipc / preload 串起来的可运行示例，`sandbox: true` 下跑通。
 
 ## 共同约定
 
-几个管理器类的包（browser / menu / tray）写法一致，学会一个就够：
+几个管理器类的包（browser / menu / tray / shortcut）写法一致，学会一个就够：
 
 - **按名注册，随处取用**：创建时给个 `name`，之后任意模块里按名取回，不用自己传实例、存全局变量。
 - **响应式句柄**：返回的句柄在原生对象之上补了可直接读写的属性，`win.title = 'x'`、`tray.state = 'busy'` 都会同步到真实对象。
@@ -25,30 +33,42 @@
 ## 组合示例
 
 ```ts
-import { app } from 'electron';
+import { setupApp } from '@quiteer/electron-app';
 import { windows } from '@quiteer/electron-browser';
 import { menus } from '@quiteer/electron-menu';
+import { shortcuts } from '@quiteer/electron-shortcut';
 import { trays } from '@quiteer/electron-tray';
 
-app.whenReady().then(() => {
-  menus.create({
-    name: 'app',
-    template: [
-      { id: 'file', label: '文件', submenu: [{ id: 'file.quit', label: '退出', role: 'quit' }] },
-    ],
-  });
+const lifecycle = setupApp({
+  windows,
+  mainWindow: 'main',
+  createMainWindow: () =>
+    windows.create({ name: 'main', width: 1200, height: 800, url: 'https://example.com' }),
+  onReady: () => {
+    menus.create({
+      name: 'app',
+      template: [
+        { id: 'file', label: '文件', submenu: [{ id: 'file.quit', label: '退出', role: 'quit' }] },
+      ],
+    });
 
-  windows.create({ name: 'main', width: 1200, height: 800, url: 'https://example.com' });
+    trays.create({
+      name: 'main',
+      icon: { idle: 'resources/tray.png', syncing: 'resources/tray-syncing.png' },
+      tooltip: '我的应用',
+      contextMenu: [
+        { label: '显示主窗口', click: () => lifecycle.focusMainWindow() },
+        { label: '退出', click: () => lifecycle.quit() },
+      ],
+    });
 
-  trays.create({
-    name: 'main',
-    icon: { idle: 'resources/tray.png', syncing: 'resources/tray-syncing.png' },
-    tooltip: '我的应用',
-    contextMenu: [
-      { label: '显示主窗口', click: () => windows.focus('main') },
-      { label: '退出', click: () => app.quit() },
-    ],
-  });
+    shortcuts.register({
+      name: 'toggle',
+      accelerator: 'CmdOrCtrl+Shift+K',
+      handler: () => lifecycle.focusMainWindow(),
+    });
+  },
+  beforeQuit: [() => trays.destroyAll(), () => windows.closeAll()],
 });
 ```
 
@@ -64,8 +84,8 @@ pnpm lint       # 仅 lint
 ```
 
 - 单元测试在各包的 `test/` 下, 打包时把 `electron` 替换为 `test/stubs/electron.ts` 里的替身, 无需真实 Electron 环境。
-- [playground/basic](./playground/basic) 用全部包拼了一个最小应用 (`pnpm --filter ./playground/basic start` 启动),
-  冒烟测试用 Playwright 拉起它, 验证 sandbox 下的预加载脚本、ipc 往返、菜单与托盘。CI 在 Linux / macOS / Windows 上各跑一遍。
+- [playground/smoke](./playground/smoke) 是冒烟测试专用的最小应用, Playwright 拉起它验证 sandbox 下的预加载脚本、ipc 往返、菜单与托盘;
+  CI 在 Linux / macOS / Windows 上各跑一遍, 同时运行 [playground/basic](./playground/basic) 的自检 (`pnpm --filter @quiteer/playground-basic smoke`)。
 
 ## 发布
 
