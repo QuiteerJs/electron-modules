@@ -19,6 +19,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm check
+      # preload 的 index.d.cts 引用 dist 里的类型, 需先构建再做类型检查
       - run: pnpm build
+      - run: pnpm check
       - run: pnpm test
