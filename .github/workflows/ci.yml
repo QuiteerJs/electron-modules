@@ -55,9 +55,6 @@ jobs:
       - name: 冒烟测试
         if: runner.os != 'Linux'
         run: pnpm test:e2e
-        env:
-          # 打出 Electron 进程的启动输出, 便于排查启动阶段的问题
-          DEBUG: pw:browser*
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
