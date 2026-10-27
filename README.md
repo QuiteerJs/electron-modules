@@ -74,3 +74,6 @@ pnpm lint       # 仅 lint
 1. 改动影响使用者时, 在 PR 里运行 `pnpm changeset` 附带变更说明 (详见 [.changeset/README.md](./.changeset/README.md))。
 2. 合并到 main 后, Release 工作流自动开 / 更新 "release: 版本发布" PR, 汇总版本号与 CHANGELOG。
 3. 合并该 PR 即发布: 先跑构建、检查、单测与冒烟测试, 通过后发布到 npm (带 provenance), 并打 tag、建 GitHub Release。
+
+新增的包需要先手动发布一次 (`pnpm build` 后在包目录 `npm publish --access public`),
+再到 npmjs.com 的包设置 → Trusted Publisher 里绑定本仓库的 `release.yml`; npm 不允许给尚不存在的包配置 Trusted Publisher。
