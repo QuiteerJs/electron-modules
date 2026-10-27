@@ -4,13 +4,13 @@
 
 ## Packages
 
-| 包 | 运行环境 | 说明 |
-| --- | --- | --- |
-| [@quiteer/electron-ipc](./packages/ipc) | 主进程 | 开箱即用的 IPC 通道（窗口控制 / 路径处理），附带渲染层类型增强 |
-| [@quiteer/electron-preload](./packages/preload) | 预加载 | 预加载脚本桥接封装，一行接入 `webPreferences.preload` |
-| [@quiteer/electron-browser](./packages/browser) | 主进程 | 窗口创建与统一管理，随时按名取窗 |
-| [@quiteer/electron-menu](./packages/menu) | 主进程 | 菜单创建与统一管理，按点分路径定位菜单项 |
-| [@quiteer/electron-tray](./packages/tray) | 主进程 | 系统托盘创建与统一管理，图标状态切换 |
+| 包                                              | 运行环境 | 说明                                                           |
+| ----------------------------------------------- | -------- | -------------------------------------------------------------- |
+| [@quiteer/electron-ipc](./packages/ipc)         | 主进程   | 开箱即用的 IPC 通道（窗口控制 / 路径处理），附带渲染层类型增强 |
+| [@quiteer/electron-preload](./packages/preload) | 预加载   | 预加载脚本桥接封装，一行接入 `webPreferences.preload`          |
+| [@quiteer/electron-browser](./packages/browser) | 主进程   | 窗口创建与统一管理，随时按名取窗                               |
+| [@quiteer/electron-menu](./packages/menu)       | 主进程   | 菜单创建与统一管理，按点分路径定位菜单项                       |
+| [@quiteer/electron-tray](./packages/tray)       | 主进程   | 系统托盘创建与统一管理，图标状态切换                           |
 
 ## 共同约定
 
@@ -25,20 +25,20 @@
 ## 组合示例
 
 ```ts
-import { app } from 'electron'
-import { windows } from '@quiteer/electron-browser'
-import { menus } from '@quiteer/electron-menu'
-import { trays } from '@quiteer/electron-tray'
+import { app } from 'electron';
+import { windows } from '@quiteer/electron-browser';
+import { menus } from '@quiteer/electron-menu';
+import { trays } from '@quiteer/electron-tray';
 
 app.whenReady().then(() => {
   menus.create({
     name: 'app',
     template: [
-      { id: 'file', label: '文件', submenu: [{ id: 'file.quit', label: '退出', role: 'quit' }] }
-    ]
-  })
+      { id: 'file', label: '文件', submenu: [{ id: 'file.quit', label: '退出', role: 'quit' }] },
+    ],
+  });
 
-  windows.create({ name: 'main', width: 1200, height: 800, url: 'https://example.com' })
+  windows.create({ name: 'main', width: 1200, height: 800, url: 'https://example.com' });
 
   trays.create({
     name: 'main',
@@ -46,10 +46,10 @@ app.whenReady().then(() => {
     tooltip: '我的应用',
     contextMenu: [
       { label: '显示主窗口', click: () => windows.focus('main') },
-      { label: '退出', click: () => app.quit() }
-    ]
-  })
-})
+      { label: '退出', click: () => app.quit() },
+    ],
+  });
+});
 ```
 
 ## 开发
@@ -58,6 +58,8 @@ app.whenReady().then(() => {
 pnpm install
 pnpm build   # 构建全部包
 pnpm test    # 运行测试
-pnpm lint    # 代码检查
+pnpm check   # 格式 + lint + 类型检查 (CI 同款)
+pnpm lint    # 仅 lint
 ```
 
+每个包的测试都在 `test/` 下, 打包时把 `electron` 替换为 `test/stubs/electron.ts` 里的替身, 无需真实 Electron 环境。

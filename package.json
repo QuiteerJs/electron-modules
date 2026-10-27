@@ -2,7 +2,6 @@
   "name": "electron-modules-monorepo",
   "version": "0.0.1",
   "private": true,
-  "packageManager": "pnpm@10.32.1",
   "description": "一些关于electron的便捷工具类库",
   "author": "quiteer",
   "scripts": {
@@ -27,5 +26,6 @@
     "tsx": "^4.21.0",
     "typescript": "catalog:",
     "vite-plus": "catalog:"
-  }
+  },
+  "packageManager": "pnpm@10.32.1"
 }
