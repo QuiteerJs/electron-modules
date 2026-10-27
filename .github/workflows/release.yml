@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+# 同一时间只跑一个发布, 后到的排队而不是取消, 避免半途中断的发布
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  release:
+    # fork 仓库没有发布权限, 直接跳过
+    if: github.repository == 'QuiteerJs/electron-modules'
+    runs-on: ubuntu-latest
+    permissions:
+      # 推送版本提交与 tag、创建 GitHub Release
+      contents: write
+      # 创建 / 更新 "Version Packages" PR
+      pull-requests: write
+      # npm Trusted Publishing (OIDC), 无需 NPM_TOKEN, 并自动附带 provenance
+      id-token: write
+    env:
+      npm_config_registry: https://registry.npmjs.org/
+      npm_config_electron_mirror: https://github.com/electron/electron/releases/download/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      # 不要设置 registry-url: 它会写入依赖 NODE_AUTH_TOKEN 的 .npmrc, 干扰 OIDC
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      # pnpm publish 底层调用 npm, Trusted Publishing 需要 npm >= 11.5.1
+      - run: npm install -g npm@latest
+      - run: pnpm install --frozen-lockfile
+
+      # 发布前的门禁: 与 CI 相同的检查 + 真 Electron 冒烟测试
+      - run: pnpm build
+      - run: pnpm check
+      - run: pnpm test
+      - run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - run: xvfb-run -a pnpm test:e2e
+
+      # 有 changeset 时开 / 更新 "Version Packages" PR; 没有时 (即版本 PR 刚合并) 发布未上 npm 的版本
+      - uses: changesets/action@v2.1.2
+        with:
+          version-script: pnpm version-packages
+          publish-script: pnpm release
+          commit-message: 'release: 版本发布'
+          pr-title: 'release: 版本发布'

@@ -15,3 +15,7 @@ jspm_packages/
 
 
 .workbuddy/
+
+# playwright
+test-results/
+playwright-report/

@@ -56,10 +56,21 @@ app.whenReady().then(() => {
 
 ```bash
 pnpm install
-pnpm build   # 构建全部包
-pnpm test    # 运行测试
-pnpm check   # 格式 + lint + 类型检查 (CI 同款)
-pnpm lint    # 仅 lint
+pnpm build      # 构建全部包
+pnpm test       # 单元测试
+pnpm test:e2e   # 真 Electron 冒烟测试 (需先 build, Linux 无桌面环境时用 xvfb-run -a pnpm test:e2e)
+pnpm check      # 格式 + lint + 类型检查 (CI 同款)
+pnpm lint       # 仅 lint
 ```
 
-每个包的测试都在 `test/` 下, 打包时把 `electron` 替换为 `test/stubs/electron.ts` 里的替身, 无需真实 Electron 环境。
+- 单元测试在各包的 `test/` 下, 打包时把 `electron` 替换为 `test/stubs/electron.ts` 里的替身, 无需真实 Electron 环境。
+- [playground/basic](./playground/basic) 用全部包拼了一个最小应用 (`pnpm --filter ./playground/basic start` 启动),
+  冒烟测试用 Playwright 拉起它, 验证 sandbox 下的预加载脚本、ipc 往返、菜单与托盘。CI 在 Linux / macOS / Windows 上各跑一遍。
+
+## 发布
+
+版本与 CHANGELOG 由 [changesets](https://github.com/changesets/changesets) 管理, 发布走 npm Trusted Publishing, 不保存任何 npm token。
+
+1. 改动影响使用者时, 在 PR 里运行 `pnpm changeset` 附带变更说明 (详见 [.changeset/README.md](./.changeset/README.md))。
+2. 合并到 main 后, Release 工作流自动开 / 更新 "release: 版本发布" PR, 汇总版本号与 CHANGELOG。
+3. 合并该 PR 即发布: 先跑构建、检查、单测与冒烟测试, 通过后发布到 npm (带 provenance), 并打 tag、建 GitHub Release。
