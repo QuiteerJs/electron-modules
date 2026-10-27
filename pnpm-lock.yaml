@@ -55,6 +55,12 @@ importers:
         specifier: 'catalog:'
         version: 0.1.12(@types/node@22.20.1)(jiti@2.7.0)(tsx@4.23.13)(typescript@5.9.3)(yaml@2.9.0)
 
+  packages/app:
+    devDependencies:
+      vite-plus:
+        specifier: 'catalog:'
+        version: 0.1.12(@types/node@26.4.0)(jiti@2.7.0)(tsx@4.23.13)(typescript@5.9.3)(yaml@2.9.0)
+
   packages/browser:
     devDependencies:
       vite-plus:
@@ -74,6 +80,12 @@ importers:
         version: 0.1.12(@types/node@26.4.0)(jiti@2.7.0)(tsx@4.23.13)(typescript@5.9.3)(yaml@2.9.0)
 
   packages/preload:
+    devDependencies:
+      vite-plus:
+        specifier: 'catalog:'
+        version: 0.1.12(@types/node@26.4.0)(jiti@2.7.0)(tsx@4.23.13)(typescript@5.9.3)(yaml@2.9.0)
+
+  packages/shortcut:
     devDependencies:
       vite-plus:
         specifier: 'catalog:'
